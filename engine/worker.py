@@ -1,5 +1,5 @@
 import time
-from engine.pygio import PygIO
+from engine.pygio import PygIO, pyg
 
 class Worker:
     def __init__(self, game):
@@ -11,7 +11,8 @@ class Worker:
         self._grapTimeMark = time.time();
         self._physTimeMark = 0;
         self.physStepDuration = 0.03;
-        self.keysInput = None
+        self.keysInput:pyg.ScancodeWrapper = None
+        game.onCreate();
 
     def start(self):
         self.gameMaster.start();
@@ -30,7 +31,7 @@ class Worker:
 
         self.pygIO.update();
 
-        if self._physTimeMark - time.time() >  self.physStepDuration:
+        if (time.time() - self._physTimeMark) >  self.physStepDuration:
             self.deltaTime = self.physStepDuration;
             self.keysInput = self.pygIO.getKeys()
             for i in self.activeMBList:
@@ -54,6 +55,9 @@ class MonoBehavior:
 
     def fixedUpdate(self):
         pass
+
+    def destroy(self):
+        self.worker.activeMBList.remove(self);
 
 class GameMaster(MonoBehavior):
     def __init__(self):

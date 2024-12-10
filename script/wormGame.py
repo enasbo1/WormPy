@@ -6,7 +6,7 @@ class WormGame(GameMaster):
         pass
 
     def start(self):
-        pass
+        Worm(self.worker);
 
     def update(self):
         pass

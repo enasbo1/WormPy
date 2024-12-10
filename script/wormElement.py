@@ -1,8 +1,9 @@
-from engine.worker import MonoBehavior, PygIO
+from engine.worker import MonoBehavior, PygIO, pyg
 
 class Worm(MonoBehavior):
     def onCreate(self):
-        pass
+        print('hello world')
+        print(self.worker)
 
     def update(self):
         pass
@@ -11,4 +12,5 @@ class Worm(MonoBehavior):
         pass
 
     def fixedUpdate(self):
-        pass
+        if self.worker.keysInput[pyg.K_SPACE]:
+            print('coucou');
