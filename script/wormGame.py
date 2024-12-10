@@ -1,5 +1,5 @@
-from engine.worker import GameMaster
-from script.wormElement import*
+from engine.worker import GameMaster, PygIO
+from script.wormElement import Worm
 
 class WormGame(GameMaster):
     def onCreate(self):

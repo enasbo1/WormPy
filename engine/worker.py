@@ -26,6 +26,9 @@ class Worker:
 
         for i in self.activeMBList:
             i.update();
+
+        self.pygIO.prepare_update()
+
         for i in self.activeMBList:
             i.show(self.pygIO);
 
