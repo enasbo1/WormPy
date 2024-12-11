@@ -1,4 +1,7 @@
-from math import*
+from math import *
+
+from typing import Tuple
+
 
 def tourne(ditem, direction, vitesse):
     if abs(ditem-direction)>pi:
@@ -87,5 +90,5 @@ def limxy(a,b,x,x1,y,y1):
     return(a,b)
 
 
-def change_ref(x,y, coords:tuple[tuple[float, float]])->tuple[tuple[float, float]]:
+def change_ref(x, y, coords: Tuple[Tuple[float, float]]) -> Tuple[Tuple[float, float]]:
     return tuple([tuple([i[0]+x, i[1]+y]) for i in coords])
