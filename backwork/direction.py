@@ -1,5 +1,8 @@
 from math import*
 
+from numpy import flatiter
+
+
 def tourne(ditem, direction, vitesse):
     if abs(ditem-direction)>pi:
         if rot(-ditem, direction)>0:
@@ -86,6 +89,37 @@ def limxy(a,b,x,x1,y,y1):
         b=y1-5
     return(a,b)
 
+def scalar(v1:tuple[float, float], v2:tuple[float, float])->float:
+    return v1[0]*v2[0]+v1[1]*v2[1];
 
-def change_ref(x,y, coords:tuple[tuple[float, float]])->tuple[tuple[float, float]]:
+# positif si v2 à droite de v1)
+def side(v1:tuple[float, float], v2:tuple[float, float])->float:
+    return v1[1]*v2[0]-v1[0]*v2[1];
+
+def rotate(v:tuple[float, float])->tuple[float, float]:
+    return -v[1], v[0]
+
+def change_ref(x:float,y:float, coords:tuple[tuple[float, float]])->tuple[tuple[float, float]]:
     return tuple([tuple([i[0]+x, i[1]+y]) for i in coords])
+
+def vector(a:tuple[float,float], b:tuple[float,float])->tuple[float, float]:
+    return b[0]-a[0],b[1]-a[1]
+
+def sum_vectors(a:tuple[float,float], b:tuple[float,float])->tuple[float, float]:
+    return a[0]+b[0],a[1]+b[1]
+
+def multiply_vector(a:tuple[float,float], fact:float)->tuple[float, float]:
+    return a[0]*fact,a[1]*fact
+
+def moy_vector(a:tuple[float,float], b:tuple[float,float]):
+    return (a[0]+b[0])/2,(a[1]+b[1])/2
+
+def norme2(a:tuple[float,float]):
+    return (a[0]**2) + (a[1]**2)
+
+def norme(a:tuple[float,float]):
+    return sqrt((a[0]**2) + (a[1]**2))
+
+def unit_vect(a:tuple[float,float]):
+    n = norme(a);
+    return a[0] / n, a[1] / n

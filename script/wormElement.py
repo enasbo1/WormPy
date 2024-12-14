@@ -1,13 +1,10 @@
 from engine.worker import MonoBehavior, PygIO, pyg
-import backwork.direction as direct
 
 class Worm(MonoBehavior):
     y = None
     x = None
 
     def onCreate(self):
-        print('hello world')
-        print(self.worker)
         self.x = 0
         self.y = 0
 
@@ -15,7 +12,8 @@ class Worm(MonoBehavior):
         pass
 
     def show(self, pygIO:PygIO):
-        pygIO.draw_poly(direct.change_ref (self.x, self.y ,((10,10),(10,-10),(-10,-15), (-10,15))),'#000000')
+        pygIO.draw_circle(self.x, self.y,8,'#880000', width = 2);
+        pygIO.draw_poly(((10, 10), (40, 50), (70, 10), (50, 30), (30, 20)), "#111111")
 
     def fixedUpdate(self):
-        self.x += self.worker.deltaTime;
+        self.x += self.worker.deltaTime*10;

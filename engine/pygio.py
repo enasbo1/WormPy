@@ -1,6 +1,5 @@
 import pygame as pyg
 import backwork.direction as direct
-from pygame.draw import circle
 
 
 
@@ -38,12 +37,18 @@ class PygIO:
     def end(self):
         pyg.quit()
 
-    def draw_circle(self, x, y, r, color):
+    def draw_circle(self, x:float, y:float, r:float, color, width=0):
         self.draw.circle(self.screen, color, (x+(self.width//2), y + (self.height//2)), r)
+        if width != 0:
+            self.draw.circle(self.screen, '#000000', (x+(self.width//2), y + (self.height//2)), r, width)
 
-    def draw_rect(self, x1, y1, x2, y2, color):
+    def draw_rect(self, x1:float, y1:float, x2:float, y2:float, color:str):
         self.draw.rect(self.screen, color, (x1+(self.width//2), y1 + (self.height//2), x2+(self.width//2), y2 + (self.height//2)))
 
-    def draw_poly(self, coords, color):
+    def draw_poly(self, coords:tuple[tuple[float,float]], color:str):
         coords = direct.change_ref(self.width//2, self.height//2, coords);
         self.draw.polygon(self.screen, color, coords);
+
+    def draw_cross(self, center:tuple[float, float], size:float, color):
+        self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,-size)), direct.sum_vectors(center, (size,size)), width=2)
+        self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,size)), direct.sum_vectors(center, (size,-size)), width=2)

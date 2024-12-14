@@ -76,3 +76,75 @@ def hitbox(zone1, zone2):
             ret=disrap(zone1[1], zone1[2], zone2[1], zone2[2])<=(zone1[3]+zone2[3])**2
 
     return(ret)
+
+def cross(A:tuple[float, float], B:tuple[float, float], C:tuple[float, float], D:tuple[float, float])->None|float:
+    AB = vector(A, B);
+    AC = vector(A, C);
+    DC = vector(D, C);
+    det = AB[0]*DC[1]-AB[1]*DC[0];
+
+    if det==0:
+        return None;
+    t = (AC[0]*DC[1]-AC[1]*DC[0])/det
+
+    if not(0<=t<1):
+        return None;
+
+    u = (AC[1]*AB[0]-AC[0]*AB[1])/det
+    if 0<=u<1:
+        return t;
+
+def seg_in_circle(circle:tuple[float, float, float], A:tuple[float, float], B:tuple[float, float])->None|float:
+    r = circle[2]**2;
+    center = (circle[0], circle[1]);
+
+    AB = vector(A, B);
+    BA = vector(B, A);
+    scal = scalar(BA, vector(B, center));
+    if scal > 0:
+        scal = scalar(AB, vector(B, center));
+        if scal > 0:
+            fact = scal/norme2(AB)
+            di = norme2(vector(center, (A[0]+(fact*AB[0]),A[1]+(fact*AB[1]))))
+            if di<r:
+                return fact;
+        else:
+            di = norme2(vector(center, A));
+            if di<r:
+                return 0.;
+    else:
+        di = norme2(vector(center, B))
+        if di<r:
+            return 1;
+
+    return None;
+
+def outBorderIn(circle:tuple[float, float, float], A:tuple[float, float], B:tuple[float, float])->int:
+    """
+        test si un segment AB est dans un cercle circle, renvoie 2 si il est entèrement dedant, 1 si partiellement et 0 sinon
+    """
+    r = circle[2]**2;
+    center = (circle[0], circle[1]);
+    ret = 0
+    di = norme2(vector(center, A));
+    if di<r:
+        ret = 1
+    di = norme2(vector(center, B))
+    if di<r:
+        ret += 1;
+    if ret==2:
+        return 2;
+    if ret==1:
+        return 1;
+
+    AB = vector(A, B);
+    BA = vector(B, A);
+    scal = scalar(BA, vector(B, center));
+    if scal > 0:
+        scal = scalar(AB, vector(B, center));
+        if scal > 0:
+            fact = scal/norme2(AB)
+            di = norme2(vector(center, (A[0]+(fact*AB[0]),A[1]+(fact*AB[1]))))
+            if di<r:
+                return 1;
+    return 0;
