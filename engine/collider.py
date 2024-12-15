@@ -17,8 +17,8 @@ class Box:
     def move_to(self, position:tuple[float, float])->None:
         self._coords = direct.change_ref(position[0], position[1], (self._relative_coords,));
 
-    def hit(self, element,  move:tuple[float, float] = (0,0))->bool|tuple[float, float]:
-        return False;
+    def hit(self, element,  move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
+        return tuple();
 
     def draw(self, pygIO:PygIO, color:str = "#000000", position:tuple[float,float]=None)->None:
         if position is None:
@@ -45,26 +45,27 @@ class CircleBox(Box):
             pygIO.draw_circle(self._relative_coords[0]+position[0], self._relative_coords[1]+position[1], self.r, color);
 
 
-    def hit(self, element:Box,  move:tuple[float, float] = (0,0))->bool|tuple[float, float]:
+    def hit(self, element:Box,  move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
         if element.type == 'point':
             p0 = element._coords;
             p1 = direct.sum_vectors(p0, move)
             n = contact.seg_in_circle(self._coords+(self.r,), p0, p1)
             if n is None:
-                return False;
+                return tuple();
             pi = direct.sum_vectors(p0, direct.multiply_vector(direct.vector(p0,p1), n));
-            return direct.vector(self._coords, pi);
+            return (direct.vector(self._coords, pi),);
 
         if element.type == 'circle':
             if direct.norme2(direct.vector(self._coords, element._coords)) < ((element.r+self.r)**2):
-                return direct.vector(self._coords, element._coords);
-            return False;
+                return (direct.vector(self._coords, element._coords),);
+            return tuple();
         if element.type == 'poly':
             circle = self._coords+(self.r,)
+            ret = tuple();
             for i in range(len(element._coords)):
                 if contact.seg_in_circle(circle , element._coords[i], element._coords[(i+1)%len(element._coords)]):
-                    return direct.rotate(direct.vector(element._coords[(i + 1) % len(element._coords)], element._coords[i]));
-            return False;
+                    ret = ret + direct.rotate(direct.vector(element._coords[(i + 1) % len(element._coords)], element._coords[i]));
+            return ret;
 
     def _out(self, p:tuple[float, float], move:tuple[float, float]):
         p0 = p;
@@ -137,33 +138,34 @@ class PolygonBox(Box):
         return [self.type]+[i for i in n]
 
     def hit(self, element:Box,  move:tuple[float, float] = (0,0))->bool|tuple[float, float]:
+        ret = tuple();
         if element.type == 'point':
             p0 = element._coords;
             p1 = direct.sum_vectors(p0, move);
             for i in range(len(self._coords)):
                 if contact.cross(p0, p1 , self._coords[i], self._coords[(i+1)%len(self._coords)]) is not None:
-                    return direct.rotate(direct.vector(self._coords[i], self._coords[(i+1) % len(self._coords)]));
-            return False;
+                    ret = ret + (direct.rotate(direct.vector(self._coords[i], self._coords[(i+1) % len(self._coords)])),);
+            return ret;
 
         if element.type == 'circle':
             circle = (element._coords[0], element._coords[1], element.r);
             for i in range(len(self._coords)):
                 if contact.seg_in_circle(circle , self._coords[i], self._coords[(i + 1) % len(self._coords)]) is not None:
-                    return direct.rotate(direct.vector(self._coords[i], self._coords[(i + 1) % len(self._coords)]));
-            return False;
+                    ret = ret + (direct.rotate(direct.vector(self._coords[i], self._coords[(i + 1) % len(self._coords)])),);
+            return ret;
 
         if element.type == 'poly':
             for p0 in element._coords:
                 p1 = direct.sum_vectors(move, p0);
                 for i in range(len(self._coords)):
                     if contact.cross(p0, p1 , self._coords[i], self._coords[(i+1)%len(self._coords)]) is not None:
-                        return direct.rotate(direct.vector(self._coords[i], self._coords[(i+1) % len(self._coords)]));
+                        ret = ret + (direct.rotate(direct.vector(self._coords[i], self._coords[(i+1) % len(self._coords)])),);
             for p0 in self._coords:
                 p1 = direct.vector(move, p0);
                 for i in range(len(element._coords)):
                     if contact.cross(p0, p1 , element._coords[i], element._coords[(i+1)%len(element._coords)]) is not None:
-                        return direct.rotate(direct.vector(element._coords[(i+1) % len(element._coords)], element._coords[i]));
-            return False;
+                        ret = ret + (direct.rotate(direct.vector(element._coords[(i+1) % len(element._coords)], element._coords[i])),);
+            return ret;
 
 
 class Collider:
@@ -181,17 +183,19 @@ class Collider:
             i.move_to(position);
 
 
-    def get_collision(self, box:Box, move:tuple[float, float] = (0,0))->None|tuple[float, float]:
-        n = self.global_box.hit(box, move=move);
-        if n:
+    def get_collision(self, box:Box, move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
+        global_hit = self.global_box.hit(box, move=move);
+        no_hole = True;
+        n = tuple();
+        if global_hit:
             for hole in self.box_holes:
                 h = hole.out(box, move=move);
-                if h==1:
-                    return None;
-                if h!=0:
-                    return direct.unit_vect(h);
-            return direct.unit_vect(n);
-        return None;
+                if (h!=0) and (h!=1):
+                    n = n + (direct.unit_vect(h),);
+                    no_hole = False;
+            if no_hole:
+                n = n + tuple(direct.unit_vect(g) for g in global_hit);
+        return n;
 
     def set_hole(self, hole:CircleBox):
         if hole.hit(self.global_box):

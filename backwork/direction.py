@@ -123,3 +123,6 @@ def norme(a:tuple[float,float]):
 def unit_vect(a:tuple[float,float]):
     n = norme(a);
     return a[0] / n, a[1] / n
+
+def fact_vect(a:tuple[float,float], fact:float):
+    return a[0]*fact, a[1]*fact
