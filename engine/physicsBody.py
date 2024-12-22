@@ -7,11 +7,13 @@ def stop_movement(physicsBody, collisionVector:tuple[float, float]):
     physicsBody.velocity[1] = 0;
 
 def collision_slide(physicsBody, collisionVector:tuple[float, float]):
-    m_correct = abs(direct.scalar(collisionVector, physicsBody.movement));
-    v_correct = abs(direct.scalar(collisionVector, physicsBody.velocity));
+    m_correct = direct.scalar(collisionVector, physicsBody.movement);
+    v_correct = direct.scalar(collisionVector, physicsBody.velocity);
     for i in (0,1):
-        physicsBody.movement[i] -= m_correct * collisionVector[i];
-        physicsBody.velocity[i] -= v_correct * collisionVector[i];
+        if m_correct>0:
+            physicsBody.movement[i] -= m_correct * collisionVector[i];
+        if v_correct>0:
+            physicsBody.velocity[i] -= v_correct * collisionVector[i];
 
 def collision_walk(physicsBody, collisionVector:tuple[float, float])->bool:
     floored = collisionVector[1] > 0.7071;

@@ -13,7 +13,7 @@ class Worm(MonoBehavior):
 
     def show(self, pygIO:PygIO):
         pygIO.draw_circle(self.x, self.y,8,'#880000', width = 2);
-        pygIO.draw_poly(((10, 10), (40, 50), (70, 10), (50, 30), (30, 20)), "#111111")
+        pygIO.draw_poly(((10., 10.), (40., 50.), (70., 10.), (50., 30.), (30., 20.)), "#111111")
 
     def fixedUpdate(self):
         self.x += self.worker.deltaTime*10;

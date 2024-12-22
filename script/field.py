@@ -1,4 +1,4 @@
-from engine.collider import Collider, PolygonBox
+from engine.collider import Collider, PolygonBox, CircleBox
 from engine.worker import MonoBehavior, PygIO, pyg
 import backwork.direction as direct
 
@@ -15,10 +15,11 @@ class Field(MonoBehavior):
                   )
 
     def onCreate(self):
-
         self.skinPoints = direct.change_ref(0,100,self.skinPoints)
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints));
         self.collider.move_to(position=(50,0))
+        hole = CircleBox(100,100,75)
+        self.collider.set_hole(hole)
 
     def update(self):
         pass

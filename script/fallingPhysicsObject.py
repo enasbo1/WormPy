@@ -10,6 +10,7 @@ class FallingPhysicsObject(MonoBehavior):
         self.physicBody = PhysicsBody(self, onCollide = self.onCollide, forces = [LinearForceField((0,100))]);
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints));
         self.physicBody.addSpeed((150,-15))
+        print(self, self.collider, self.collider.box_holes)
 
     def update(self):
         pass

@@ -1,6 +1,9 @@
+from numpy.ma.core import masked_singleton
+
 import backwork.direction as direct
 import backwork.jarvis as jarvis
 import backwork.contact as contact
+from backwork.contact import in_test_segment
 from engine.pygio import PygIO
 
 
@@ -15,10 +18,22 @@ class Box:
         return [self.type, n[0], n[1]];
 
     def move_to(self, position:tuple[float, float])->None:
-        self._coords = direct.change_ref(position[0], position[1], (self._relative_coords,));
+        self._coords = direct.change_ref(position[0], position[1], (self._relative_coords,))[0];
 
     def hit(self, element,  move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
         return tuple();
+
+    def _is_in(self, point:tuple[float, float]) -> bool:
+        return False;
+
+    def is_in(self, element, move:tuple[float, float] = (0,0))->bool:
+        if element.type == 'point':
+            return self._is_in(direct.sum_vectors(element._coords, move));
+        elif element.type == 'poly':
+            for i in direct.change_ref(move[0], move[1], element._coords):
+                if self._is_in(i):
+                    return True;
+            return False;
 
     def draw(self, pygIO:PygIO, color:str = "#000000", position:tuple[float,float]=None)->None:
         if position is None:
@@ -31,7 +46,7 @@ class CircleBox(Box):
     def __init__(self, x, y, r):
         self.type = 'circle';
         self._coords:tuple[float, float] = (x, y);
-        self.relative_coords:tuple[float, float] = (x, y);
+        self._relative_coords:tuple[float, float] = (x, y);
         self.r = r;
 
     def box(self, ref:tuple[float, float] = (0 ,0))->tuple:
@@ -44,6 +59,8 @@ class CircleBox(Box):
         else:
             pygIO.draw_circle(self._relative_coords[0]+position[0], self._relative_coords[1]+position[1], self.r, color);
 
+    def _is_in(self, point:tuple[float, float]) -> bool:
+        return direct.norme2(direct.vector(self._coords, point))<=(self.r**2);
 
     def hit(self, element:Box,  move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
         if element.type == 'point':
@@ -72,7 +89,7 @@ class CircleBox(Box):
         p1 = direct.sum_vectors(p0, move)
         n = contact.outBorderIn(self._coords+(self.r,), p0, p1)
         if n == 1:
-            return direct.vector(direct.moy_vector(p0, p1), self._coords);
+            return direct.vector(self._coords,direct.moy_vector(p0, p1));
         else:
             return 1*(n==2)
 
@@ -97,17 +114,21 @@ class CircleBox(Box):
                     return n;
                 if h!=2:
                     if h!=n:
-                        return direct.vector(direct.moy_vector(
+                        return direct.vector(
+                            self._coords,
                             direct.moy_vector(
-                                element[i-1],
-                                direct.sum_vectors(element[i-1], move)
-                            ),
-                            direct.moy_vector(
-                                element[i],
-                                direct.sum_vectors(element[i], move)
+                                direct.moy_vector(
+                                    element._coords[i-1],
+                                    direct.sum_vectors(element._coords[i-1], move)
+                                ),
+                                direct.moy_vector(
+                                    element._coords[i],
+                                    direct.sum_vectors(element._coords[i], move)
+                                )
                             )
-                        ), self._coords)
+                        )
                 h=n
+        return 1;
 
 
 class PolygonBox(Box):
@@ -132,6 +153,19 @@ class PolygonBox(Box):
         else:
             pygIO.draw_poly(direct.change_ref(position[0], position[1], self._relative_coords), color);
 
+    def _is_in(self, point:tuple[float, float])->bool:
+        n = 0;
+        l = len(self._coords)
+        for i in range(l):
+            j = in_test_segment(point, self._coords[i], self._coords[(i+1)%l]);
+            if j is not None:
+                n+=j;
+            else:
+                v = self._coords[i][0];
+                if ((self._coords[i-1][0]-v)>0) == ((v-self._coords[(i+1)%l][0])>=0):
+                    n+=1
+                    print(j)
+        return (n%2) == 1
 
     def box(self, ref:tuple[float, float] = (0 ,0)):
         n = direct.change_ref(ref[0], ref[1], self._coords);
@@ -169,9 +203,9 @@ class PolygonBox(Box):
 
 
 class Collider:
-    def __init__(self, worker, global_box: Box|None, box_holes: list[CircleBox] = list(), active=True):
+    def __init__(self, worker, global_box: Box|None, box_holes: list[CircleBox] = None, active=True):
         self.global_box:Box = global_box
-        self.box_holes = box_holes
+        self.box_holes = box_holes if box_holes is not None else [];
         self.worker = worker
         self._active = active
         if active:
@@ -185,13 +219,16 @@ class Collider:
 
     def get_collision(self, box:Box, move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
         global_hit = self.global_box.hit(box, move=move);
+        is_in = self.global_box.is_in(box,move=move);
         no_hole = True;
         n = tuple();
-        if global_hit:
+        if is_in :
             for hole in self.box_holes:
                 h = hole.out(box, move=move);
                 if (h!=0) and (h!=1):
                     n = n + (direct.unit_vect(h),);
+                    no_hole = False;
+                if h==1:
                     no_hole = False;
             if no_hole:
                 n = n + tuple(direct.unit_vect(g) for g in global_hit);

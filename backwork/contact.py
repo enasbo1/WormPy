@@ -94,6 +94,27 @@ def cross(A:tuple[float, float], B:tuple[float, float], C:tuple[float, float], D
     if 0<=u<1:
         return t;
 
+def in_test_segment(P:tuple[float, float], A:tuple[float, float], B:tuple[float, float])->int|None:
+    Ph = (0.,1.);
+    PA = vector(P, A);
+    BA = vector(B, A);
+    det = Ph[0]*BA[1]-Ph[1]*BA[0];
+
+    if det==0:
+        return 0;
+    t = (PA[0]*BA[1]-PA[1]*BA[0])/det
+
+    if not(0<=t):
+        return 0;
+
+    u = (PA[1]*Ph[0]-PA[0]*Ph[1])/det
+    if u == 0:
+        print("so hi: ", end='');
+        return None;
+    if 0<u<1:
+        return 1;
+    return 0;
+
 def seg_in_circle(circle:tuple[float, float, float], A:tuple[float, float], B:tuple[float, float])->None|float:
     r = circle[2]**2;
     center = (circle[0], circle[1]);

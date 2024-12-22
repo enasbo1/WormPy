@@ -51,4 +51,4 @@ class PygIO:
 
     def draw_cross(self, center:tuple[float, float], size:float, color):
         self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,-size)), direct.sum_vectors(center, (size,size)), width=2)
-        self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,size)), direct.sum_vectors(center, (size,-size)), width=2)
+        self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,size)), direct.sum_vectors(center, (size,-size)), width=2) 

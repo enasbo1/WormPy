@@ -10,7 +10,7 @@ class WormGame(GameMaster):
     def start(self):
         Worm(self.worker);
         Field(self.worker);
-        Field(self.worker).collider.move_to((350,100));
+        Field(self.worker).collider.move_to((400,100));
         FallingPhysicsObject(self.worker);
 
     def update(self):
