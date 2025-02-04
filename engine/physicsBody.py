@@ -42,16 +42,20 @@ class LinearForceField(Force):
 
 
 class PhysicsBody:
-    def __init__(self, master, onCollide = collision_slide, forces:list[Force]=[LinearForceField((0,18))]):
+    def __init__(self, master, onCollide = collision_slide, forces=None, position=None):
+        if position is None:
+            position = [0., 0.]
+        if forces is None:
+            forces = [LinearForceField((0, 18))]
         self.master = master
-        self.worker = master.worker;
-        self.worker.activePBList.append(self);
-        self.position:list[float, float] = [0., 0.]
+        self.worker = master.worker
+        self.worker.activePBList.append(self)
+        self.position:list[float, float] = position
         self.movement = [0., 0.]
         self.velocity = [0., 0.]
-        self.movement_ref:tuple(float,float) = (0., 0.);
-        self.velocity_ref:tuple(float,float) = (0., 0.);
-        self.forces:list = forces;
+        self.movement_ref:tuple(float,float) = (0., 0.)
+        self.velocity_ref:tuple(float,float) = (0., 0.)
+        self.forces:list = forces
         self.on_collide = onCollide
 
     def instantPush(self, move:tuple[float, float]):

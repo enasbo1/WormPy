@@ -4,12 +4,13 @@ from engine.collider import Collider
 from engine.physicsBody import PhysicsBody
 from engine.pygio import PygIO, pyg
 
+
 class Worker:
     def __init__(self, game):
         self.pygIO = PygIO();
-        self.activeMBList:list[MonoBehavior] = [game];
-        self.activePBList:list[PhysicsBody] = [];
-        self.activeCollider:list[Collider] = [];
+        self.activeMBList: list[MonoBehavior] = [game];
+        self.activePBList: list[PhysicsBody] = [];
+        self.activeCollider: list[Collider] = [];
         self.gameMaster = game;
         game.worker = self;
         self.deltaTime = 0;
@@ -17,7 +18,7 @@ class Worker:
         self._physTimeMark = 0;
         self.extrapolatePhysicsDelta = 0;
         self.physStepDuration = 0.03;
-        self.keysInput:pyg.ScancodeWrapper = None
+        self.keysInput: pyg.ScancodeWrapper = None
         game.onCreate();
 
     def start(self):
@@ -41,7 +42,7 @@ class Worker:
 
         self.pygIO.update();
 
-        if (time.time() - self._physTimeMark) >  self.physStepDuration:
+        if (time.time() - self._physTimeMark) > self.physStepDuration:
             self.deltaTime = self.physStepDuration;
             self._physTimeMark = time.time();
             self.keysInput = self.pygIO.getKeys()
@@ -50,22 +51,27 @@ class Worker:
             for i in self.activePBList:
                 i.applyPhysicStep();
 
+
 class MonoBehavior:
-    def __init__(self, worker:Worker):
+    position = [0, 0]
+
+    def __init__(self, worker: Worker, position=None):
+        if position is None:
+            position = [0, 0]
+        self.position = position
         self.worker = worker
         worker.activeMBList.append(self)
-        self.physicBody:PhysicsBody = None;
-        self.collider:Collider = None;
+        self.physicBody: PhysicsBody = None;
+        self.collider: Collider = None;
         self.onCreate()
 
     def onCreate(self):
         pass
 
-
     def update(self):
         pass
 
-    def show(self, pygIO:PygIO):
+    def show(self, pygIO: PygIO):
         pass
 
     def fixedUpdate(self):
@@ -73,6 +79,7 @@ class MonoBehavior:
 
     def destroy(self):
         self.worker.activeMBList.remove(self);
+
 
 class GameMaster(MonoBehavior):
     def __init__(self):
