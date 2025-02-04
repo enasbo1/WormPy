@@ -81,7 +81,7 @@ class CircleBox(Box):
             ret = tuple();
             for i in range(len(element._coords)):
                 if contact.seg_in_circle(circle , element._coords[i], element._coords[(i+1)%len(element._coords)]):
-                    ret = ret + direct.rotate(direct.vector(element._coords[(i + 1) % len(element._coords)], element._coords[i]));
+                    ret = ret + (direct.rotate(direct.vector(element._coords[(i + 1) % len(element._coords)], element._coords[i])),);
             return ret;
 
     def _out(self, p:tuple[float, float], move:tuple[float, float]):
