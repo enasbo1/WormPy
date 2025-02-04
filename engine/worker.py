@@ -1,6 +1,6 @@
 import time
 
-from engine.collider import Collider
+from engine.collider import Collider, CircleBox
 from engine.physicsBody import PhysicsBody
 from engine.pygio import PygIO, pyg
 
@@ -22,6 +22,10 @@ class Worker:
 
     def start(self):
         self.gameMaster.start();
+
+    def set_hole(self, hole:CircleBox):
+        for i in self.activeCollider:
+            i.set_hole(hole);
 
     def end(self):
         self.pygIO.end();

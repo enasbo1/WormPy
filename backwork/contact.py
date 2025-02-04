@@ -104,12 +104,11 @@ def in_test_segment(P:tuple[float, float], A:tuple[float, float], B:tuple[float,
         return 0;
     t = (PA[0]*BA[1]-PA[1]*BA[0])/det
 
-    if not(0<=t):
+    if 0 > t:
         return 0;
 
     u = (PA[1]*Ph[0]-PA[0]*Ph[1])/det
     if u == 0:
-        print("so hi: ", end='');
         return None;
     if 0<u<1:
         return 1;
@@ -162,10 +161,20 @@ def outBorderIn(circle:tuple[float, float, float], A:tuple[float, float], B:tupl
     BA = vector(B, A);
     scal = scalar(BA, vector(B, center));
     if scal > 0:
-        scal = scalar(AB, vector(B, center));
+        scal = scalar(AB, vector(A, center));
         if scal > 0:
             fact = scal/norme2(AB)
             di = norme2(vector(center, (A[0]+(fact*AB[0]),A[1]+(fact*AB[1]))))
             if di<r:
                 return 1;
     return 0;
+
+
+"""
+soit e le projeté orthogonal de c sur ab
+AB.AC = sin(BAC)*|AB|*|AC| et sin(BAC)*|AC| = |AE|
+<=> AB.AC / |AB|^2 = |AE|/|AB|
+fact = |AE|/|AB|
+
+E = A + fact*AB
+"""

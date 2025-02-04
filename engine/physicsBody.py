@@ -1,3 +1,5 @@
+from doctest import master
+
 import backwork.direction as direct
 
 def stop_movement(physicsBody, collisionVector:tuple[float, float]):
@@ -90,9 +92,11 @@ class PhysicsBody:
         if self.master.collider is None:
             self._move();
         else:
+            self.master.collider.mark = tuple();
             for i in self.worker.activeCollider:
                 if i!=self.master.collider:
                     col = i.get_collision(self.master.collider.global_box, move=tuple(self.movement))
+                    self.master.collider.mark += i.mark
                     for j,c in enumerate(col):
                         if (j==0) or (not c in col[:j-1]):
                             self.on_collide(self, c);

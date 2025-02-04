@@ -102,7 +102,7 @@ class CircleBox(Box):
             dist2 = direct.norme2(vect);
             if dist2>(self.r + element.r)**2:
                 return 0;
-            if dist2>(self.r-element.r)**2:
+            if dist2<(self.r - element.r)**2:
                 return 1;
             return vect
 
@@ -128,7 +128,8 @@ class CircleBox(Box):
                             )
                         )
                 h=n
-        return 1;
+            return h;
+        return 0;
 
 
 class PolygonBox(Box):
@@ -164,7 +165,6 @@ class PolygonBox(Box):
                 v = self._coords[i][0];
                 if ((self._coords[i-1][0]-v)>0) == ((v-self._coords[(i+1)%l][0])>=0):
                     n+=1
-                    print(j)
         return (n%2) == 1
 
     def box(self, ref:tuple[float, float] = (0 ,0)):
@@ -208,6 +208,7 @@ class Collider:
         self.box_holes = box_holes if box_holes is not None else [];
         self.worker = worker
         self._active = active
+        self.mark = tuple();
         if active:
             worker.activeCollider.append(self)
 
@@ -220,18 +221,25 @@ class Collider:
     def get_collision(self, box:Box, move:tuple[float, float] = (0,0))->tuple[tuple[float, float]]:
         global_hit = self.global_box.hit(box, move=move);
         is_in = self.global_box.is_in(box,move=move);
+        self.mark = tuple();
         no_hole = True;
         n = tuple();
-        if is_in :
+        for hole in self.box_holes:
+            h = hole.out(box, move=move);
+            if h == 1:
+                self.mark += ('hole_noCollision',);
+
+        if is_in:
             for hole in self.box_holes:
                 h = hole.out(box, move=move);
                 if (h!=0) and (h!=1):
                     n = n + (direct.unit_vect(h),);
-                    no_hole = False;
-                if h==1:
+                    self.mark += ('hole_collision',);
+                if h!=0:
                     no_hole = False;
             if no_hole:
                 n = n + tuple(direct.unit_vect(g) for g in global_hit);
+                self.mark += ('global_collision',);
         return n;
 
     def set_hole(self, hole:CircleBox):
