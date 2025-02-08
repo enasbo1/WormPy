@@ -3,16 +3,30 @@ from engine.worker import MonoBehavior, PygIO, pyg
 import backwork.direction as direct
 
 class Field(MonoBehavior):
-    skinPoints = ((0.,0.),
-                  (100.,-50.),
-                  (200.,-50.),
-                  (150.,50.),
-                  (50.,100.),
-                  (-50.,100.),
-                  (-150.,50.),
-                  (-200.,-50.),
-                  (-100.,-50)
-                  )
+    skinPoints = (
+        (0, 0),
+        (500, 0),
+        (800, 200),
+        (1000, 150),
+        (1300, 300),
+        (1500, 250),
+        (1700, 400),
+        (1800, 600),
+        (1700, 800),
+        (1500, 900),
+        (1400, 1050),
+        (1200, 1100),
+        (1000, 1000),
+        (800, 1100),
+        (600, 950),
+        (400, 900),
+        (300, 700),
+        (200, 750),
+        (100, 600),
+        (50, 400),
+        (0, 350)
+    )
+
 
     def onCreate(self):
         self.skinPoints = direct.change_ref(0,100,self.skinPoints)

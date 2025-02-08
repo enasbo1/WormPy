@@ -7,9 +7,10 @@ class FallingPhysicsObject(MonoBehavior):
     skinPoints = ((0.,25.),(10.,20.),(10.,0.),(0.,-5.),(-10.,0.),(-10.,20.))
     floored = False;
     def onCreate(self):
-        self.physicBody = PhysicsBody(self, onCollide = self.onCollide, forces = [LinearForceField((0,100))]);
-        self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False);
-        #self.physicBody.addSpeed((150,-40))
+        self.physicBody = PhysicsBody(self, onCollide = self.onCollide, forces = [LinearForceField((0,100))])
+        self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False)
+
+        self.physicBody.addSpeed((150,-50))
 
     def update(self):
         pass

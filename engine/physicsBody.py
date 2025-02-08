@@ -92,12 +92,14 @@ class PhysicsBody:
         if self.master.collider is None:
             self._move();
         else:
-            self.master.collider.mark = tuple();
+            colider = self.master.collider
+            mark = tuple();
+            col = tuple()
             for i in self.worker.activeCollider:
                 if i!=self.master.collider:
-                    col = i.get_collision(self.master.collider.global_box, move=tuple(self.movement))
+                    col += i.get_collision(self.master.collider.global_box, move=tuple(self.movement))
                     self.master.collider.mark += i.mark
-                    for j,c in enumerate(col):
-                        if (j==0) or (not c in col[:j-1]):
-                            self.on_collide(self, c);
+            for j,c in enumerate(col):
+                if (j==0) or (not c in col[:j-1]):
+                    self.on_collide(self, c);
             self._move();

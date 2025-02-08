@@ -43,7 +43,7 @@ class Box:
 
 
 class CircleBox(Box):
-    def __init__(self, x, y, r):
+    def __init__(self, x:float, y:float,r:float):
         self.type = 'circle';
         self._coords:tuple[float, float] = (x, y);
         self._relative_coords:tuple[float, float] = (x, y);
