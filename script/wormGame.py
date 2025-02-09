@@ -1,9 +1,5 @@
-from random import randint
-
 from engine.worker import GameMaster, PygIO
-from script.fallingPhysicsObject import FallingPhysicsObject
 from script.field import Field
-from script.wormElement import Worm
 from script.player import PlayerObject
 
 
@@ -35,7 +31,7 @@ class WormGame(GameMaster):
     def update(self):
         pass
 
-    def show(self, pygIO:PygIO):
+    def show(self, pygIO: PygIO):
         current = self.getCurrent()
         color = current.color
         passing = 0
@@ -44,7 +40,8 @@ class WormGame(GameMaster):
             passing = (self.waitTimeLimit-self.waitTime)/self.waitTimeLimit
         else:
             passing = (current.playTimeLimit-current.playTime)/current.playTimeLimit
-        pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30+(45*passing), "#888888")
+
+        pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30 + (45 * passing), "#888888")
         pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30, color)
         pass
 

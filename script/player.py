@@ -8,7 +8,7 @@ class PlayerObject(MonoBehavior):
     color = '#880000'
     currentWormIndex = 0
     playTime = 0
-    playTimeLimit = 5
+    playTimeLimit = 10
     controls: tuple[int, int, int, int]
     worms: list[Worm]
 
