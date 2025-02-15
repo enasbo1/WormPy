@@ -11,6 +11,7 @@ class Worm(MonoBehavior):
     healthMax = 200
     healthWidth = 75
     floored = False
+    indicator = False
 
     def onCreate(self):
         self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100))])
@@ -21,9 +22,16 @@ class Worm(MonoBehavior):
         pass
 
     def show(self, pygIO: PygIO):
+        # Display worm health
         pos = self.physicBody.get_extrapolate()
         healthDisplay = (self.health / self.healthMax) * self.healthWidth
         pygIO.draw_rect(pos[0] - (self.healthWidth / 2), pos[1] - 30, healthDisplay, 10, '#008800')
+
+        # Display indicator
+        if self.indicator:
+            pygIO.draw_circle(pos[0], pos[1] - 30, 7.5, '#777777')
+
+        # Display worm
         self.collider.show_collider(pygIO, color=self.color, position=pos)
 
     def fixedUpdate(self):

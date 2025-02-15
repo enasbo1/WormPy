@@ -25,11 +25,15 @@ class PlayerObject(MonoBehavior):
         newWorm.color = self.color
         self.worms.append(newWorm)
         return newWorm
+
     def playerTurn(self) -> bool:
+        # check if the player still had a worm
+        if not (len(self.worms) > 0):
+            return True
 
-
-        # check if it's still the player turn and he still had a worm
-        if not (len(self.worms) > 0) or self.playTime >= self.playTimeLimit:
+        # check if it's still the player turn
+        if self.playTime >= self.playTimeLimit:
+            self.worms[self.currentWormIndex].indicator = False
             self.playTime = 0
             self.currentWormIndex += 1
             return True
@@ -38,6 +42,7 @@ class PlayerObject(MonoBehavior):
         if self.currentWormIndex >= len(self.worms):
             self.currentWormIndex = 0
 
+        self.worms[self.currentWormIndex].indicator = True
         self.worms[self.currentWormIndex].playTurn(self.controls)
         self.playTime += self.worker.deltaTime
 
