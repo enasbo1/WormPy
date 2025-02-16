@@ -8,6 +8,9 @@ class WormGame(GameMaster):
     currentPlayerIndex = 0
     waitTime = 0
     waitTimeLimit = 2
+    turn = 0
+    waterHeight = 275
+    waterY = 0
 
     def onCreate(self):
         pass
@@ -43,19 +46,43 @@ class WormGame(GameMaster):
 
         pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30 + (45 * passing), "#888888")
         pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30, color)
+
+        # Water
+        self.waterY = (pygIO.height // 2) - self.waterHeight
+        pygIO.draw_rect(-pygIO.width // 2, self.waterY, pygIO.width, self.waterHeight, '#005599')
         pass
 
     def fixedUpdate(self):
+        # Player/Worm Turns
         if self.waitTime >= self.waitTimeLimit:
             if self.getCurrent().playerTurn():
-                self.nextTurn()
+                self.nextPlayer()
+
+        # Remove dead worms
+        for player in self.players:
+            for worm in player.worms:
+                pos = worm.physicBody.get_extrapolate()
+                if pos[1] >= self.waterY:
+                    worm.health = 0
+                if not worm.isAlive():
+                    # End player turn if he killed his worm
+                    if player.playTime > 0:
+                        player.playTime = player.playTimeLimit
+                    player.worms.remove(worm)
+                    del worm
 
         self.waitTime += self.worker.deltaTime
 
     def getCurrent(self):
         return self.players[self.currentPlayerIndex]
 
-    def nextTurn(self):
+    def nextPlayer(self):
         self.waitTime = 0
         self.currentPlayerIndex += 1
-        self.currentPlayerIndex %= len(self.players)
+        if self.currentPlayerIndex >= len(self.players):
+            self.turn += 1
+            print(self.turn)
+            self.currentPlayerIndex = 0
+
+            if self.turn > 2:
+                self.waterHeight += 5

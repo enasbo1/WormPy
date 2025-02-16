@@ -32,6 +32,7 @@ class Worm(MonoBehavior):
             pygIO.draw_circle(pos[0], pos[1] - 30, 7.5, '#777777')
 
         # Display worm
+
         self.collider.show_collider(pygIO, color=self.color, position=pos)
 
     def fixedUpdate(self):
@@ -59,3 +60,13 @@ class Worm(MonoBehavior):
         if self.worker.keysInput[controls[3]]:  # right
             self.to_speed_x(40, 100)
             pass
+
+    def isAlive(self) -> bool:
+        if self.health > 0:
+            return True
+
+        # del self.physicBody
+        # del self.collider
+        self.destroy()
+
+        return False

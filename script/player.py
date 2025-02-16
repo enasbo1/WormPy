@@ -8,12 +8,12 @@ class PlayerObject(MonoBehavior):
     color = '#880000'
     currentWormIndex = 0
     playTime = 0
-    playTimeLimit = 10
+    playTimeLimit = 5
     controls: tuple[int, int, int, int]
     worms: list[Worm]
 
     def onCreate(self):
-        # controls: up, down, left, right
+        # Controls: up, down, left, right
         self.controls: tuple[int, int, int, int] = (pyg.K_UP, pyg.K_DOWN, pyg.K_LEFT, pyg.K_RIGHT)
         self.worms: list[Worm] = []
 
@@ -27,20 +27,19 @@ class PlayerObject(MonoBehavior):
         return newWorm
 
     def playerTurn(self) -> bool:
-        # check if the player still had a worm
+        # Check if the player still had a worm
         if not (len(self.worms) > 0):
             return True
 
-        # check if it's still the player turn
+        if self.currentWormIndex >= len(self.worms):
+            self.currentWormIndex = 0
+
+        # Check if it's still the player turn
         if self.playTime >= self.playTimeLimit:
             self.worms[self.currentWormIndex].indicator = False
             self.playTime = 0
             self.currentWormIndex += 1
             return True
-
-        # select player next worm
-        if self.currentWormIndex >= len(self.worms):
-            self.currentWormIndex = 0
 
         self.worms[self.currentWormIndex].indicator = True
         self.worms[self.currentWormIndex].playTurn(self.controls)
