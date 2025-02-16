@@ -1,3 +1,5 @@
+from random import randint
+
 from engine.physicsBody import PhysicsBody, LinearForceField, collision_walk
 from engine.collider import Collider, PolygonBox
 from engine.worker import MonoBehavior, PygIO
@@ -16,7 +18,8 @@ class Worm(MonoBehavior):
     def onCreate(self):
         self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100))])
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False)
-        self.physicBody.addSpeed((150, -15))
+        self.physicBody.teleport((randint(-400,400),-250))
+        self.physicBody.addSpeed((0,500))
 
     def update(self):
         pass
@@ -55,10 +58,10 @@ class Worm(MonoBehavior):
             self.physicBody.addSpeed((0, -100))
             pass
         if self.worker.keysInput[controls[2]]:  # left
-            self.to_speed_x(-40, -100)
+            self.to_speed_x(-48*(1+self.floored), -100)
             pass
         if self.worker.keysInput[controls[3]]:  # right
-            self.to_speed_x(40, 100)
+            self.to_speed_x(48*(1+self.floored), 100)
             pass
 
     def isAlive(self) -> bool:

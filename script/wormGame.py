@@ -16,7 +16,7 @@ class WormGame(GameMaster):
         pass
 
     def start(self):
-        Field(self.worker).collider.move_to((-1000,-100))
+        Field(self.worker).collider.move_to((0,0))
         # for i in range(50):
         #     n = FallingPhysicsObject(self.worker).physicBody;
         #     n.teleport((700-(20*i), -100 + randint(-50, 50)));
@@ -24,7 +24,7 @@ class WormGame(GameMaster):
         # hole = CircleBox(100,100,75)
         # self.worker.set_hole(hole)
 
-        for i in ("#008800", "#880000"):
+        for i in ("#222288", "#882222"):
             test = PlayerObject(self.worker)
             test.color = i
             test.addWorm()
