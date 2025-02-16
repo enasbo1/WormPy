@@ -4,6 +4,8 @@ import backwork.direction as direct
 
 
 class PygIO:
+    mouse = pyg.mouse;
+
     def __init__(self):
         pyg.init()
         self.screen = pyg.display.set_mode()
@@ -33,6 +35,7 @@ class PygIO:
     def getKeys(self):
         self.inputKeys = pyg.key.get_pressed()
         return self.inputKeys;
+
 
     def end(self):
         pyg.quit()

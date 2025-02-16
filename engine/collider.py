@@ -223,11 +223,8 @@ class Collider:
         is_in = self.global_box.is_in(box,move=move);
         self.mark = tuple();
         no_hole = True;
+        in_hole = False;
         n = tuple();
-        for hole in self.box_holes:
-            h = hole.out(box, move=move);
-            if h == 1:
-                self.mark += ('hole_noCollision',);
 
         if is_in:
             for hole in self.box_holes:
@@ -237,6 +234,10 @@ class Collider:
                     self.mark += ('hole_collision',);
                 if h!=0:
                     no_hole = False;
+                if h==1:
+                    in_hole = True;
+            if in_hole:
+                n = tuple();
             if no_hole:
                 n = n + tuple(direct.unit_vect(g) for g in global_hit);
                 self.mark += ('global_collision',);

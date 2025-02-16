@@ -5,6 +5,8 @@ from engine.physicsBody import PhysicsBody
 from engine.pygio import PygIO, pyg
 
 class Worker:
+    mouse = PygIO.mouse
+
     def __init__(self, game):
         self.pygIO = PygIO();
         self.activeMBList:list[MonoBehavior] = [game];
@@ -18,6 +20,7 @@ class Worker:
         self.extrapolatePhysicsDelta = 0;
         self.physStepDuration = 0.03;
         self.keysInput:pyg.ScancodeWrapper = None
+        self.show_over = lambda piGio:None;
         game.onCreate();
 
     def start(self):
@@ -42,6 +45,8 @@ class Worker:
 
         for i in self.activeMBList:
             i.show(self.pygIO);
+
+        self.show_over(self.pygIO);
 
         self.pygIO.update();
 
@@ -76,7 +81,12 @@ class MonoBehavior:
         pass
 
     def destroy(self):
-        self.worker.activeMBList.remove(self);
+        if self in self.worker.activeMBList:
+            self.worker.activeMBList.remove(self);
+        if self.physicBody in self.worker.activePBList:
+            self.worker.activePBList.remove(self.physicBody);
+        if self.collider in self.worker.activeCollider:
+            self.worker.activeCollider.remove(self.collider);
 
 class GameMaster(MonoBehavior):
     def __init__(self):

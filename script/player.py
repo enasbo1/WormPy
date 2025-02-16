@@ -15,13 +15,13 @@ class PlayerObject(MonoBehavior):
     def onCreate(self):
         # Controls: up, down, left, right
         self.controls: tuple[int, int, int, int] = (pyg.K_UP, pyg.K_DOWN, pyg.K_LEFT, pyg.K_RIGHT)
-        self.worms: list[Worm] = []
+        self.worms = []
 
     def set_control(self, controls: tuple[int, int, int, int] = (pyg.K_UP, pyg.K_DOWN, pyg.K_LEFT, pyg.K_RIGHT)):
         self.controls = controls
 
     def addWorm(self) -> Worm:
-        newWorm = Worm(self.worker)
+        newWorm = Worm(self.worker);
         newWorm.color = self.color
         self.worms.append(newWorm)
         return newWorm
@@ -39,6 +39,7 @@ class PlayerObject(MonoBehavior):
             self.worms[self.currentWormIndex].indicator = False
             self.playTime = 0
             self.currentWormIndex += 1
+            self.currentWormIndex %= len(self.worms)
             return True
 
         self.worms[self.currentWormIndex].indicator = True

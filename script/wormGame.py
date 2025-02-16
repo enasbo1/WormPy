@@ -1,19 +1,20 @@
 from engine.worker import GameMaster, PygIO
 from script.field import Field
 from script.player import PlayerObject
-
+from script.wormElement import Worm
 
 class WormGame(GameMaster):
     players: list[PlayerObject] = []
     currentPlayerIndex = 0
     waitTime = 0
     waitTimeLimit = 2
+    wormList : list[Worm] = []
     turn = 0
-    waterHeight = 275
+    waterHeight = 100
     waterY = 0
 
     def onCreate(self):
-        pass
+        self.worker.show_over = self.show_over;
 
     def start(self):
         Field(self.worker).collider.move_to((0,0))
@@ -27,14 +28,16 @@ class WormGame(GameMaster):
         for i in ("#222288", "#882222"):
             test = PlayerObject(self.worker)
             test.color = i
-            test.addWorm()
-            test.addWorm()
+            self.wormList.append(test.addWorm().init(self.wormList))
+            self.wormList.append(test.addWorm().init(self.wormList))
+            self.wormList.append(test.addWorm().init(self.wormList))
+            self.wormList.append(test.addWorm().init(self.wormList))
             self.players.append(test)
 
     def update(self):
         pass
 
-    def show(self, pygIO: PygIO):
+    def show_over(self, pygIO: PygIO):
         current = self.getCurrent()
         color = current.color
         passing = 0
@@ -65,7 +68,6 @@ class WormGame(GameMaster):
                 if pos[1] >= self.waterY:
                     worm.health = 0
                 if not worm.isAlive():
-                    # End player turn if he killed his worm
                     if player.playTime > 0:
                         player.playTime = player.playTimeLimit
                     player.worms.remove(worm)
@@ -81,7 +83,6 @@ class WormGame(GameMaster):
         self.currentPlayerIndex += 1
         if self.currentPlayerIndex >= len(self.players):
             self.turn += 1
-            print(self.turn)
             self.currentPlayerIndex = 0
 
             if self.turn > 2:
