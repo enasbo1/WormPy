@@ -124,14 +124,6 @@ class WormGame(GameMaster):
         pass
 
     def fixedUpdate(self):
-        if self.waitTime >= self.waitTimeLimit:
-            if self.gameOver:
-                return
-
-            # Player/Worm Turns
-            if self.getCurrent().playerTurn():
-                self.nextPlayer()
-
         # Remove dead worms
         for player in self.players:
             for worm in player.worms:
@@ -143,6 +135,14 @@ class WormGame(GameMaster):
                         player.playTime = player.playTimeLimit
                     player.worms.remove(worm)
                     del worm
+
+        if self.waitTime >= self.waitTimeLimit:
+            if self.gameOver:
+                return
+
+            # Player/Worm Turns
+            if self.getCurrent().playerTurn():
+                self.nextPlayer()
 
         # Water rise anim
         if self.waterHeightCurrent < self.waterHeightTarget:
