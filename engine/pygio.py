@@ -59,5 +59,6 @@ class PygIO:
 
     def draw_text(self, x, y, text: str, size: int, color='#000000'):
         my_font = pyg.font.SysFont('Aptos', size)
-        text_surface = my_font.render(text, False, (0, 0, 0))
-        self.screen.blit(text_surface, (x + (self.width // 2), y + (self.height // 2)))
+        text_surface = my_font.render(text, False, color)
+        text_rect = text_surface.get_rect(center=(x + (self.width // 2), y + (self.height // 2)))
+        self.screen.blit(text_surface, text_rect)

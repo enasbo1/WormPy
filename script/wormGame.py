@@ -7,23 +7,24 @@ import os
 
 class WormGame(GameMaster):
     currentPlayerIndex = 0
-    players: list[PlayerObject] = []
-    playerTimeLimit = 10
+    gameOver = False
     fieldDepth = 300
     fieldHeight = 0
     fieldPoints = 25
     fieldWidth = 400
+    players: list[PlayerObject] = []
+    playerColors = ["#222288", "#882222"]
+    playerTimeLimit = 10
     turn = 0
     waitTime = 0
     waitTimeLimit = 2
-    waterCurrentHeight = 0
-    waterTargetHeight = 100
+    waterHeightCurrent = 0
+    waterHeightTarget = 100
     waterRisePerTurn = 20
     waterRisingTurn = 2
     waterY = 0
     wormList: list[Worm] = []
     wormFriction = 0.10
-    playerColors = ["#222288", "#882222"]
     wormPerPlayer = 2
 
     def onCreate(self):
@@ -52,7 +53,7 @@ class WormGame(GameMaster):
                         self.wormFriction = float(lineData[1])
 
                     if lineData[0] == 'WATER_HEIGHT_START':
-                        self.waterTargetHeight = int(lineData[1])
+                        self.waterHeightTarget = int(lineData[1])
 
                     if lineData[0] == 'WATER_RISING_TURN':
                         self.waterRisingTurn = int(lineData[1])
@@ -104,16 +105,30 @@ class WormGame(GameMaster):
         circlePos = (-pygIO.width // 2 + 50, -pygIO.height // 2 + 50)
         pygIO.draw_circle(circlePos[0], circlePos[1], 30 + (45 * passing), "#888888")
         pygIO.draw_circle(circlePos[0], circlePos[1], 30, color)
-        pygIO.draw_text(circlePos[0] - 13, circlePos[1] - 23, str(self.turn), 75, "#000000")
+        pygIO.draw_text(circlePos[0], circlePos[1]+2, str(self.turn), 65, "#000000")
 
         # Water
-        self.waterY = (pygIO.height // 2) - self.waterCurrentHeight
-        pygIO.draw_rect(-pygIO.width // 2, self.waterY, pygIO.width, self.waterCurrentHeight, '#005599')
+        self.waterY = (pygIO.height // 2) - self.waterHeightCurrent
+        pygIO.draw_rect(-pygIO.width // 2, self.waterY, pygIO.width, self.waterHeightCurrent, '#005599')
+
+        # Victory screen
+        if self.waitTime >= self.waitTimeLimit:
+            if self.gameOver:
+                pygIO.draw_rect(-110, -50, 220, 100, "#000000")
+                if len(current.worms) > 0:
+                    pygIO.draw_rect(-93, -26, 52, 52, "#FFFFFF")
+                    pygIO.draw_rect(-92, -25, 50, 50, current.color)
+                    pygIO.draw_text(40, 0, 'win', 90, "#FFFFFF")
+                else:
+                    pygIO.draw_text(0, 0, 'draw', 90, "#FFFFFF")
         pass
 
     def fixedUpdate(self):
-        # Player/Worm Turns
         if self.waitTime >= self.waitTimeLimit:
+            if self.gameOver:
+                return
+
+            # Player/Worm Turns
             if self.getCurrent().playerTurn():
                 self.nextPlayer()
 
@@ -130,8 +145,8 @@ class WormGame(GameMaster):
                     del worm
 
         # Water rise anim
-        if self.waterCurrentHeight < self.waterTargetHeight:
-            self.waterCurrentHeight += 1
+        if self.waterHeightCurrent < self.waterHeightTarget:
+            self.waterHeightCurrent += 1
             return
 
         self.waitTime += self.worker.deltaTime
@@ -150,10 +165,13 @@ class WormGame(GameMaster):
             self.checkNextTurn()
             playerAlive -= 1
 
+        if playerAlive <= 1:
+            self.gameOver = True
+
     def checkNextTurn(self):
         if self.currentPlayerIndex >= len(self.players):
             self.turn += 1
             self.currentPlayerIndex = 0
 
             if self.turn >= self.waterRisingTurn:
-                self.waterTargetHeight += self.waterRisePerTurn
+                self.waterHeightTarget += self.waterRisePerTurn

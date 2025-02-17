@@ -1,9 +1,10 @@
 // number of players by colors (in hex code)
-PLAYER_COLORS=#222288,#882222
+PLAYER_COLORS=#222288
+,#882222
 ,#228822
 
 // number of worms per player
-WORMS_PER_PLAYER=2
+WORMS_PER_PLAYER=1
 
 // players play time
 PLAYER_TIME_LIMIT=10
