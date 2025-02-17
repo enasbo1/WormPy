@@ -20,9 +20,10 @@ class PlayerObject(MonoBehavior):
     def set_control(self, controls: tuple[int, int, int, int] = (pyg.K_UP, pyg.K_DOWN, pyg.K_LEFT, pyg.K_RIGHT)):
         self.controls = controls
 
-    def addWorm(self) -> Worm:
+    def addWorm(self, friction: float) -> Worm:
         newWorm = Worm(self.worker)
         newWorm.color = self.color
+        newWorm.friction = friction
         self.worms.append(newWorm)
         return newWorm
 

@@ -21,6 +21,7 @@ class WormGame(GameMaster):
     waterRisingTurn = 2
     waterY = 0
     wormList: list[Worm] = []
+    wormFriction = 0.10
     playerColors = ["#222288", "#882222"]
     wormPerPlayer = 2
 
@@ -45,6 +46,9 @@ class WormGame(GameMaster):
 
                     if lineData[0] == 'WAIT_TIME_LIMIT':
                         self.waitTimeLimit = int(lineData[1])
+
+                    if lineData[0] == 'WORM_FRICTION':
+                        self.wormFriction = float(lineData[1])
 
                     if lineData[0] == 'WATER_HEIGHT_START':
                         self.waterTargetHeight = int(lineData[1])
@@ -77,8 +81,8 @@ class WormGame(GameMaster):
             player.color = color.strip()
             player.playTimeLimit = self.playerTimeLimit
             for j in range(self.wormPerPlayer):
-                self.wormList.append(player.addWorm().init(self.wormList))
-                self.wormList.append(player.addWorm().init(self.wormList))
+                self.wormList.append(player.addWorm(self.wormFriction).init(self.wormList))
+                self.wormList.append(player.addWorm(self.wormFriction).init(self.wormList))
             self.players.append(player)
 
     def update(self):

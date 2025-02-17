@@ -15,6 +15,7 @@ class Worm(MonoBehavior):
     healthMax = 100
     healthWidth = 75
     floored = False
+    friction = 0.1
     indicator = False
     cooldown = 0
 
@@ -25,7 +26,7 @@ class Worm(MonoBehavior):
     def onCreate(self):
         self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100))])
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False)
-        self.physicBody.teleport((randint(-400,400),-250))
+        self.physicBody.teleport((randint(-400, 400), -250))
         self.physicBody.addSpeed((0,500))
 
     def update(self):
@@ -49,7 +50,7 @@ class Worm(MonoBehavior):
         self.collider.move_to(self.physicBody.get_position())
 
         if self.floored:
-            self.physicBody.addSpeed(direct.fact_vect(self.physicBody.velocity, -0.05))
+            self.physicBody.addSpeed(direct.fact_vect(self.physicBody.velocity, -self.friction))
         self.floored = False
 
     def onCollide(self, physicsBody, collisionVector: tuple[float, float]):
