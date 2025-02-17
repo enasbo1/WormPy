@@ -9,7 +9,7 @@ import numpy as np
 class Field(MonoBehavior):
     skinPoints: tuple[tuple[float, float], ...]
 
-    def horseshoe_contour(self, center=(0, -100), inner_radius=400, depth=300, num_points=25):
+    def horseshoe_contour(self, center=(0, -100), inner_radius=400, depth=300, num_points=9):
         outer_radius = inner_radius + depth
         points = []
 
@@ -20,7 +20,7 @@ class Field(MonoBehavior):
             points.append((int(x), int(y)))
 
         # Arc supérieur (demi-cercle extérieur)
-        for theta in np.linspace(np.pi, 0, num_points // 3):
+        for theta in np.linspace(np.pi, 0, num_points // 2):
             x = center[0] + outer_radius * np.cos(theta)
             y = center[1] + outer_radius * np.sin(theta) * 0.5 + randint(-40, 40)
             points.append((int(x), int(y)))

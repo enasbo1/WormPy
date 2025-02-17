@@ -11,6 +11,7 @@ class WormGame(GameMaster):
     playerTimeLimit = 10
     fieldDepth = 300
     fieldHeight = 0
+    fieldPoints = 25
     fieldWidth = 400
     turn = 0
     waitTime = 0
@@ -68,12 +69,14 @@ class WormGame(GameMaster):
                     if lineData[0] == 'FIELD_HEIGHT':
                         self.fieldHeight = -int(lineData[1])
 
+                    if lineData[0] == 'FIELD_POINTS':
+                        self.fieldPoints = int(lineData[1])
 
     def start(self):
         self.readConfig()
 
         a = Field(self.worker)
-        a.horseshoe_contour(inner_radius=self.fieldWidth, depth=self.fieldDepth)
+        a.horseshoe_contour(inner_radius=self.fieldWidth, depth=self.fieldDepth, num_points=self.fieldPoints)
         a.collider.move_to((0, self.fieldHeight))
 
         for color in self.playerColors:

@@ -26,8 +26,8 @@ class Worm(MonoBehavior):
     def onCreate(self):
         self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100))])
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False)
-        self.physicBody.teleport((randint(-400, 400), -250))
-        self.physicBody.addSpeed((0,500))
+        self.physicBody.teleport((randint(-400, 400), -500))
+        self.physicBody.addSpeed((0, 400))
 
     def update(self):
         pass

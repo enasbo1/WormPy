@@ -30,3 +30,6 @@ FIELD_DEPTH=600
 
 // field starting height
 FIELD_HEIGHT=100
+
+// field inner point, instable below 9, break collision if too high
+FIELD_POINTS=25
