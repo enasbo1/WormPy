@@ -133,7 +133,7 @@ class CircleBox(Box):
 
 
 class PolygonBox(Box):
-    def __init__(self, coords: tuple[tuple[float, float]]):
+    def __init__(self, coords: tuple[tuple[float, float], ...]):
         self.type = 'poly';
         self._coords:tuple[tuple[float, float]] = coords;
         self._relative_coords:tuple[tuple[float, float]] = coords;

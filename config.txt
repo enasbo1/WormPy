@@ -18,3 +18,12 @@ WATER_RISE_PER_TURN=20
 
 // number of turn before water start to rise
 WATER_RISING_TURN=2
+
+// field width
+FIELD_WIDTH=700
+
+// field depth
+FIELD_DEPTH=600
+
+// field starting height
+FIELD_HEIGHT=100

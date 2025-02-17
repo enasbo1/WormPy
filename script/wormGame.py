@@ -9,6 +9,9 @@ class WormGame(GameMaster):
     currentPlayerIndex = 0
     players: list[PlayerObject] = []
     playerTimeLimit = 10
+    fieldDepth = 300
+    fieldHeight = 0
+    fieldWidth = 400
     turn = 0
     waitTime = 0
     waitTimeLimit = 2
@@ -46,22 +49,28 @@ class WormGame(GameMaster):
                     if lineData[0] == 'WATER_HEIGHT_START':
                         self.waterTargetHeight = int(lineData[1])
 
-                    if lineData[0] == 'WATER_RISE_PER_TURN':
-                        self.waterRisePerTurn = int(lineData[1])
-
                     if lineData[0] == 'WATER_RISING_TURN':
                         self.waterRisingTurn = int(lineData[1])
 
-    def start(self):
-        Field(self.worker).collider.move_to((0,0))
-        # for i in range(50):
-        #     n = FallingPhysicsObject(self.worker).physicBody;
-        #     n.teleport((700-(20*i), -100 + randint(-50, 50)));
-        #     n.addSpeed((0, randint(-50,150)))
-        # hole = CircleBox(100,100,75)
-        # self.worker.set_hole(hole)
+                    if lineData[0] == 'WATER_RISE_PER_TURN':
+                        self.waterRisePerTurn = int(lineData[1])
 
+                    if lineData[0] == 'FIELD_WIDTH':
+                        self.fieldWidth = int(lineData[1])
+
+                    if lineData[0] == 'FIELD_DEPTH':
+                        self.fieldDepth = int(lineData[1])
+
+                    if lineData[0] == 'FIELD_HEIGHT':
+                        self.fieldHeight = -int(lineData[1])
+
+
+    def start(self):
         self.readConfig()
+
+        a = Field(self.worker)
+        a.horseshoe_contour(inner_radius=self.fieldWidth, depth=self.fieldDepth)
+        a.collider.move_to((0, self.fieldHeight))
 
         for color in self.playerColors:
             player = PlayerObject(self.worker)
