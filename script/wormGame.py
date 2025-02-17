@@ -136,10 +136,12 @@ class WormGame(GameMaster):
         self.waitTime = 0
         self.currentPlayerIndex += 1
         self.checkNextTurn()
-        
-        while not len(self.getCurrent().worms) > 0:
+
+        playerAlive = len(self.players)
+        while not len(self.getCurrent().worms) > 0 and playerAlive > 0:
             self.currentPlayerIndex += 1
             self.checkNextTurn()
+            playerAlive -= 1
 
     def checkNextTurn(self):
         if self.currentPlayerIndex >= len(self.players):
