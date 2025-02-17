@@ -8,6 +8,7 @@ class PygIO:
 
     def __init__(self):
         pyg.init()
+        pyg.font.init()
         self.screen = pyg.display.set_mode()
         self.inputKeys = pyg.key.get_pressed()
         n = pyg.display.Info();
@@ -54,4 +55,9 @@ class PygIO:
 
     def draw_cross(self, center:tuple[float, float], size:float, color):
         self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,-size)), direct.sum_vectors(center, (size,size)), width=2)
-        self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,size)), direct.sum_vectors(center, (size,-size)), width=2) 
+        self.draw.line(self.screen, color, direct.sum_vectors(center, (-size,size)), direct.sum_vectors(center, (size,-size)), width=2)
+
+    def draw_text(self, x, y, text: str, size: int, color='#000000'):
+        my_font = pyg.font.SysFont('Aptos', size)
+        text_surface = my_font.render(text, False, (0, 0, 0))
+        self.screen.blit(text_surface, (x + (self.width // 2), y + (self.height // 2)))

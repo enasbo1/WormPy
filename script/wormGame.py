@@ -80,8 +80,10 @@ class WormGame(GameMaster):
         else:
             passing = (current.playTimeLimit-current.playTime)/current.playTimeLimit
 
-        pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30 + (45 * passing), "#888888")
-        pygIO.draw_circle(-pygIO.width // 2 + 50, -pygIO.height // 2 + 50, 30, color)
+        circlePos = (-pygIO.width // 2 + 50, -pygIO.height // 2 + 50)
+        pygIO.draw_circle(circlePos[0], circlePos[1], 30 + (45 * passing), "#888888")
+        pygIO.draw_circle(circlePos[0], circlePos[1], 30, color)
+        pygIO.draw_text(circlePos[0] - 13, circlePos[1] - 23, str(self.turn + 1), 75, "#000000")
 
         # Water
         self.waterY = (pygIO.height // 2) - self.waterHeight
