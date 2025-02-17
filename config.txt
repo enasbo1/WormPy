@@ -1,7 +1,5 @@
 // number of players by colors (in hex code)
-PLAYER_COLORS=#222288
-,#882222
-,#228822
+PLAYER_COLORS=#222288,#882222,#228822
 
 // number of worms per player
 WORMS_PER_PLAYER=1

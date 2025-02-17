@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame as pyg
 import backwork.direction as direct
 
@@ -37,6 +39,8 @@ class PygIO:
         self.inputKeys = pyg.key.get_pressed()
         return self.inputKeys;
 
+    def getRandomScreenPosition(self)->tuple[int, int]:
+        return randint(-self.width//2, self.width//2), randint(-self.height//2, self.height//2)
 
     def end(self):
         pyg.quit()

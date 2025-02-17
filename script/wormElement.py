@@ -7,6 +7,8 @@ import backwork.direction as direct
 from script.grenade import Grenade
 from script.missile import Missile
 
+class Winded:
+    wind = LinearForceField((0,0))
 
 class Worm(MonoBehavior):
     skinPoints = ((0., 25.), (10., 20.), (10., 0.), (0., -5.), (-10., 0.), (-10., 20.))
@@ -18,14 +20,13 @@ class Worm(MonoBehavior):
     floored = False
     friction = 0.1
     indicator = False
-    cooldown = 0
 
     def init(self, wormList: list[MonoBehavior]) -> MonoBehavior:
         self.wormList = wormList
         return self
 
     def onCreate(self):
-        self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100)),SpeedLimitForce(500)])
+        self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100)),SpeedLimitForce(500), Winded.wind])
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False)
         self.physicBody.teleport((randint(-400, 400), -500))
         self.physicBody.addSpeed((0, 400))
@@ -34,14 +35,14 @@ class Worm(MonoBehavior):
         pass
 
     def show(self, pygIO: PygIO):
-        # Display worm health
         pos = self.physicBody.get_extrapolate()
-        healthDisplay = (self.health / self.healthMax) * self.healthWidth
-        pygIO.draw_rect(pos[0] - (self.healthWidth / 2), pos[1] - 30, healthDisplay, 10, '#008800')
-
         # Display indicator
         if self.indicator:
-            pygIO.draw_circle(pos[0], pos[1] - 30, 7.5, '#777777')
+            pygIO.draw_circle(pos[0], pos[1] - 30, 20, '#777777')
+
+        # Display worm health
+        healthDisplay = (self.health / self.healthMax) * self.healthWidth
+        pygIO.draw_rect(pos[0] - (self.healthWidth / 2), pos[1] - 30, healthDisplay, 10, '#008800')
 
         # Display worm
 
@@ -65,7 +66,6 @@ class Worm(MonoBehavior):
             self.physicBody.addSpeed((acc*self.worker.deltaTime, 0))
 
     def playTurn(self, controls: tuple[int, int, int, int]) -> bool:
-        self.cooldown -= self.worker.deltaTime
         if self.worker.keysInput[controls[0]] and self.floored:  # up
             self.physicBody.addSpeed((0, -100))
             return True
@@ -78,20 +78,18 @@ class Worm(MonoBehavior):
             self.to_speed_x(48*(1+self.floored), 100)
             return True
 
-        if self.worker.keysInput[controls[1]] and self.cooldown < 0:
+        if self.worker.keysInput[controls[1]]:
             gr = Grenade(self.worker).init(self.wormList).physicBody
             pos = self.physicBody.get_position()
             gr.teleport(pos)
             gr.addSpeed(direct.vector(pos,direct.vector((self.worker.pygIO.width//2, self.worker.pygIO.height//2), self.worker.mouse.get_pos())))
-            self.cooldown = 1.5
             return False
 
-        if self.worker.mouse.get_pressed()[0] and self.cooldown < 0:
+        if self.worker.mouse.get_pressed()[0]:
             gr = Missile(self.worker).init(self.wormList).physicBody
             pos = self.physicBody.get_position()
             gr.teleport(pos)
             gr.addSpeed(direct.vector(pos,direct.vector((self.worker.pygIO.width//2, self.worker.pygIO.height//2), self.worker.mouse.get_pos())))
-            self.cooldown = 1.5
             return False
 
         return True

@@ -1,7 +1,7 @@
 from doctest import master
 
 import backwork.direction as direct
-from backwork.direction import norme2, unit_vect, fact_vect
+from backwork.direction import norme2, unit_vect, fact_vect, vector
 
 
 def stop_movement(physicsBody, collisionVector:tuple[float, float]):
@@ -51,9 +51,7 @@ class SpeedLimitForce(Force):
 
     def applyForce(self, body):
         if norme2(body.velocity)>(self.value**2):
-            n = fact_vect(unit_vect(body.velocity), self.value);
-            body.velocity[0] = n[0]
-            body.velocity[1] = n[1]
+            body.setSpeed(fact_vect(unit_vect(body.velocity), self.value));
 
 class PhysicsBody:
     def __init__(self, master, onCollide = collision_slide, forces:list[Force]=[LinearForceField((0,18))]):
@@ -75,6 +73,10 @@ class PhysicsBody:
     def addSpeed(self, move:tuple[float, float]):
         self.velocity[0] += move[0]
         self.velocity[1] += move[1]
+
+    def setSpeed(self, value:tuple[float, float]):
+        self.velocity[0] = value[0];
+        self.velocity[1] = value[1];
 
     def teleport(self, pos:tuple[float,float]):
         self.position[0] = pos[0];

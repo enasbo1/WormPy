@@ -1,7 +1,10 @@
+from random import randint
+
 from engine.worker import GameMaster, PygIO
 from script.field import Field
+from script.leaf import Leaf
 from script.player import PlayerObject
-from script.wormElement import Worm
+from script.wormElement import Worm, Winded
 import os
 
 
@@ -17,7 +20,7 @@ class WormGame(GameMaster):
     playerTimeLimit = 10
     turn = 0
     waitTime = 0
-    waitTimeLimit = 2
+    waitTimeLimit = 3
     waterHeightCurrent = 0
     waterHeightTarget = 100
     waterRisePerTurn = 20
@@ -75,7 +78,8 @@ class WormGame(GameMaster):
 
     def start(self):
         self.readConfig()
-
+        for i in range(10):
+            Leaf(self.worker)
         a = Field(self.worker)
         a.horseshoe_contour(inner_radius=self.fieldWidth, depth=self.fieldDepth, num_points=self.fieldPoints)
         a.collider.move_to((0, self.fieldHeight))
@@ -88,6 +92,8 @@ class WormGame(GameMaster):
                 self.wormList.append(player.addWorm(self.wormFriction).init(self.wormList))
                 self.wormList.append(player.addWorm(self.wormFriction).init(self.wormList))
             self.players.append(player)
+        for i in range(10):
+            Leaf(self.worker)
 
     def update(self):
         pass
@@ -171,6 +177,7 @@ class WormGame(GameMaster):
     def checkNextTurn(self):
         if self.currentPlayerIndex >= len(self.players):
             self.turn += 1
+            Winded.wind.forceVector = (randint(-50,50), randint(-50,50))
             self.currentPlayerIndex = 0
 
             if self.turn >= self.waterRisingTurn:
