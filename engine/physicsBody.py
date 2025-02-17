@@ -1,6 +1,8 @@
 from doctest import master
 
 import backwork.direction as direct
+from backwork.direction import norme2, unit_vect, fact_vect
+
 
 def stop_movement(physicsBody, collisionVector:tuple[float, float]):
     physicsBody.movement[0] = 0;
@@ -18,7 +20,7 @@ def collision_slide(physicsBody, collisionVector:tuple[float, float]):
             physicsBody.velocity[i] -= v_correct * collisionVector[i];
 
 def collision_walk(physicsBody, collisionVector:tuple[float, float])->bool:
-    floored = collisionVector[1] > 0.7071;
+    floored = collisionVector[1] > 0.5;
     if floored:
         physicsBody.movement[1] = 0;
         physicsBody.velocity[1] = 0;
@@ -42,6 +44,16 @@ class LinearForceField(Force):
         body.velocity[0] += self.forceVector[0]*body.worker.deltaTime
         body.velocity[1] += self.forceVector[1]*body.worker.deltaTime
 
+
+class SpeedLimitForce(Force):
+    def __init__(self, value:float):
+        self.value = value
+
+    def applyForce(self, body):
+        if norme2(body.velocity)>(self.value**2):
+            n = fact_vect(unit_vect(body.velocity), self.value);
+            body.velocity[0] = n[0]
+            body.velocity[1] = n[1]
 
 class PhysicsBody:
     def __init__(self, master, onCollide = collision_slide, forces:list[Force]=[LinearForceField((0,18))]):

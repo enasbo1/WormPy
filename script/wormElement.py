@@ -1,18 +1,19 @@
 from random import randint
 
-from engine.physicsBody import PhysicsBody, LinearForceField, collision_walk
+from engine.physicsBody import PhysicsBody, LinearForceField, collision_walk, SpeedLimitForce
 from engine.collider import Collider, PolygonBox
 from engine.worker import MonoBehavior, PygIO
 import backwork.direction as direct
-from script.Grenade import Grenade
+from script.grenade import Grenade
+from script.missile import Missile
 
 
 class Worm(MonoBehavior):
     skinPoints = ((0., 25.), (10., 20.), (10., 0.), (0., -5.), (-10., 0.), (-10., 20.))
     color = '#880000'
     wormList: list[MonoBehavior]
-    health = 100
-    healthMax = 100
+    health = 200
+    healthMax = 200
     healthWidth = 75
     floored = False
     friction = 0.1
@@ -24,7 +25,7 @@ class Worm(MonoBehavior):
         return self
 
     def onCreate(self):
-        self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100))])
+        self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100)),SpeedLimitForce(500)])
         self.collider = Collider(self.worker, PolygonBox(self.skinPoints), active=False)
         self.physicBody.teleport((randint(-400, 400), -500))
         self.physicBody.addSpeed((0, 400))
@@ -82,7 +83,15 @@ class Worm(MonoBehavior):
             pos = self.physicBody.get_position()
             gr.teleport(pos)
             gr.addSpeed(direct.vector(pos,direct.vector((self.worker.pygIO.width//2, self.worker.pygIO.height//2), self.worker.mouse.get_pos())))
-            self.cooldown = 2
+            self.cooldown = 1.5
+            return False
+
+        if self.worker.mouse.get_pressed()[0] and self.cooldown < 0:
+            gr = Missile(self.worker).init(self.wormList).physicBody
+            pos = self.physicBody.get_position()
+            gr.teleport(pos)
+            gr.addSpeed(direct.vector(pos,direct.vector((self.worker.pygIO.width//2, self.worker.pygIO.height//2), self.worker.mouse.get_pos())))
+            self.cooldown = 1.5
             return False
 
         return True

@@ -1,8 +1,9 @@
 // number of players by colors (in hex code)
-PLAYER_COLORS=#222288, #882222, #228822
+PLAYER_COLORS=#222288,#882222
+,#228822
 
 // number of worms per player
-WORMS_PER_PLAYER=1
+WORMS_PER_PLAYER=2
 
 // players play time
 PLAYER_TIME_LIMIT=10
@@ -23,10 +24,10 @@ WATER_RISE_PER_TURN=20
 WATER_RISING_TURN=2
 
 // field width
-FIELD_WIDTH=800
+FIELD_WIDTH=400
 
 // field depth
-FIELD_DEPTH=600
+FIELD_DEPTH=300
 
 // field starting height
 FIELD_HEIGHT=100
