@@ -1,17 +1,20 @@
 // number of players by colors (in hex code)
-PLAYER_COLORS=#222288,#882222,#228822
+PLAYER_COLORS=#222288, #882222, #228822
 
 // number of worms per player
-WORMS_PER_PLAYER=3
+WORMS_PER_PLAYER=1
 
 // players play time
-PLAYER_TIME_LIMIT=20
+PLAYER_TIME_LIMIT=5
 
 // waiting time
-WAIT_TIME_LIMIT=2
+WAIT_TIME_LIMIT=1
 
 // water starting height
 WATER_HEIGHT_START=100
+
+// how high the water rises at the end of a turn
+WATER_RISE_PER_TURN=20
 
 // number of turn before water start to rise
 WATER_RISING_TURN=2

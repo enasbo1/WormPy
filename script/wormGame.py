@@ -12,11 +12,13 @@ class WormGame(GameMaster):
     turn = 0
     waitTime = 0
     waitTimeLimit = 2
-    waterHeight = 100
+    waterCurrentHeight = 0
+    waterTargetHeight = 100
+    waterRisePerTurn = 20
     waterRisingTurn = 2
     waterY = 0
     wormList: list[Worm] = []
-    wormColors = ["#222288", "#882222"]
+    playerColors = ["#222288", "#882222"]
     wormPerPlayer = 2
 
     def onCreate(self):
@@ -30,7 +32,7 @@ class WormGame(GameMaster):
                 lineData = line.rstrip().split("=")
                 if len(lineData) > 1:
                     if lineData[0] == 'PLAYER_COLORS':
-                        self.wormColors = lineData[1].split(",")
+                        self.playerColors = lineData[1].split(",")
 
                     if lineData[0] == 'WORMS_PER_PLAYER':
                         self.wormPerPlayer = int(lineData[1])
@@ -42,7 +44,10 @@ class WormGame(GameMaster):
                         self.waitTimeLimit = int(lineData[1])
 
                     if lineData[0] == 'WATER_HEIGHT_START':
-                        self.waterHeight = int(lineData[1])
+                        self.waterTargetHeight = int(lineData[1])
+
+                    if lineData[0] == 'WATER_RISE_PER_TURN':
+                        self.waterRisePerTurn = int(lineData[1])
 
                     if lineData[0] == 'WATER_RISING_TURN':
                         self.waterRisingTurn = int(lineData[1])
@@ -58,9 +63,9 @@ class WormGame(GameMaster):
 
         self.readConfig()
 
-        for i in self.wormColors:
+        for color in self.playerColors:
             player = PlayerObject(self.worker)
-            player.color = i
+            player.color = color.strip()
             player.playTimeLimit = self.playerTimeLimit
             for j in range(self.wormPerPlayer):
                 self.wormList.append(player.addWorm().init(self.wormList))
@@ -83,11 +88,11 @@ class WormGame(GameMaster):
         circlePos = (-pygIO.width // 2 + 50, -pygIO.height // 2 + 50)
         pygIO.draw_circle(circlePos[0], circlePos[1], 30 + (45 * passing), "#888888")
         pygIO.draw_circle(circlePos[0], circlePos[1], 30, color)
-        pygIO.draw_text(circlePos[0] - 13, circlePos[1] - 23, str(self.turn + 1), 75, "#000000")
+        pygIO.draw_text(circlePos[0] - 13, circlePos[1] - 23, str(self.turn), 75, "#000000")
 
         # Water
-        self.waterY = (pygIO.height // 2) - self.waterHeight
-        pygIO.draw_rect(-pygIO.width // 2, self.waterY, pygIO.width, self.waterHeight, '#005599')
+        self.waterY = (pygIO.height // 2) - self.waterCurrentHeight
+        pygIO.draw_rect(-pygIO.width // 2, self.waterY, pygIO.width, self.waterCurrentHeight, '#005599')
         pass
 
     def fixedUpdate(self):
@@ -108,6 +113,11 @@ class WormGame(GameMaster):
                     player.worms.remove(worm)
                     del worm
 
+        # Water rise anim
+        if self.waterCurrentHeight < self.waterTargetHeight:
+            self.waterCurrentHeight += 1
+            return
+
         self.waitTime += self.worker.deltaTime
 
     def getCurrent(self):
@@ -120,5 +130,5 @@ class WormGame(GameMaster):
             self.turn += 1
             self.currentPlayerIndex = 0
 
-            if self.turn > self.waterRisingTurn:
-                self.waterHeight += 5
+            if self.turn >= self.waterRisingTurn:
+                self.waterTargetHeight += self.waterRisePerTurn
