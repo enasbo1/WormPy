@@ -1,4 +1,3 @@
-from multiprocessing.pool import worker
 from random import randint
 
 from engine.physicsBody import PhysicsBody, LinearForceField, collision_walk
@@ -11,17 +10,17 @@ from script.Grenade import Grenade
 class Worm(MonoBehavior):
     skinPoints = ((0., 25.), (10., 20.), (10., 0.), (0., -5.), (-10., 0.), (-10., 20.))
     color = '#880000'
-    wormList:list[MonoBehavior];
+    wormList: list[MonoBehavior]
     health = 100
     healthMax = 100
     healthWidth = 75
     floored = False
     indicator = False
-    cooldown = 0 ;
+    cooldown = 0
 
-    def init(self, wormList:list[MonoBehavior])->MonoBehavior:
+    def init(self, wormList: list[MonoBehavior]) -> MonoBehavior:
         self.wormList = wormList
-        return self;
+        return self
 
     def onCreate(self):
         self.physicBody = PhysicsBody(self, onCollide=self.onCollide, forces=[LinearForceField((0, 100))])
@@ -54,8 +53,8 @@ class Worm(MonoBehavior):
         self.floored = False
 
     def onCollide(self, physicsBody, collisionVector: tuple[float, float]):
-        if direct.scalar(collisionVector, physicsBody.movement)>8:
-            self.health -= 10;
+        if direct.scalar(collisionVector, physicsBody.movement) > 8:
+            self.health -= 10
         if collision_walk(physicsBody, collisionVector):
             self.floored = True
 
@@ -63,23 +62,29 @@ class Worm(MonoBehavior):
         if abs(self.physicBody.velocity[0]) < abs(speed_cap):
             self.physicBody.addSpeed((acc*self.worker.deltaTime, 0))
 
-    def playTurn(self, controls: tuple[int, int, int, int]):
-        self.cooldown-=self.worker.deltaTime;
+    def playTurn(self, controls: tuple[int, int, int, int]) -> bool:
+        self.cooldown -= self.worker.deltaTime
         if self.worker.keysInput[controls[0]] and self.floored:  # up
             self.physicBody.addSpeed((0, -100))
-            pass
+            return True
+
         if self.worker.keysInput[controls[2]]:  # left
             self.to_speed_x(-48*(1+self.floored), -100)
-            pass
+            return True
+
         if self.worker.keysInput[controls[3]]:  # right
             self.to_speed_x(48*(1+self.floored), 100)
-            pass
-        if self.worker.keysInput[controls[1]] and self.cooldown<0:
+            return True
+
+        if self.worker.keysInput[controls[1]] and self.cooldown < 0:
             gr = Grenade(self.worker).init(self.wormList).physicBody
             pos = self.physicBody.get_position()
-            gr.teleport(pos);
-            gr.addSpeed(direct.vector(pos,direct.vector((self.worker.pygIO.width//2, self.worker.pygIO.height//2), self.worker.mouse.get_pos())));
+            gr.teleport(pos)
+            gr.addSpeed(direct.vector(pos,direct.vector((self.worker.pygIO.width//2, self.worker.pygIO.height//2), self.worker.mouse.get_pos())))
             self.cooldown = 2
+            return False
+
+        return True
 
     def isAlive(self) -> bool:
         if self.health > 0:

@@ -8,7 +8,7 @@ class PlayerObject(MonoBehavior):
     color = '#880000'
     currentWormIndex = 0
     playTime = 0
-    playTimeLimit = 5
+    playTimeLimit = 10
     controls: tuple[int, int, int, int]
     worms: list[Worm]
 
@@ -21,7 +21,7 @@ class PlayerObject(MonoBehavior):
         self.controls = controls
 
     def addWorm(self) -> Worm:
-        newWorm = Worm(self.worker);
+        newWorm = Worm(self.worker)
         newWorm.color = self.color
         self.worms.append(newWorm)
         return newWorm
@@ -35,7 +35,7 @@ class PlayerObject(MonoBehavior):
             self.currentWormIndex = 0
 
         # Check if it's still the player turn
-        if self.playTime >= self.playTimeLimit:
+        if self.playTime >= self.playTimeLimit or not self.worms[self.currentWormIndex].playTurn(self.controls):
             self.worms[self.currentWormIndex].indicator = False
             self.playTime = 0
             self.currentWormIndex += 1
@@ -43,7 +43,6 @@ class PlayerObject(MonoBehavior):
             return True
 
         self.worms[self.currentWormIndex].indicator = True
-        self.worms[self.currentWormIndex].playTurn(self.controls)
         self.playTime += self.worker.deltaTime
 
         return False

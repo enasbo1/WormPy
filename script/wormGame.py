@@ -2,19 +2,50 @@ from engine.worker import GameMaster, PygIO
 from script.field import Field
 from script.player import PlayerObject
 from script.wormElement import Worm
+import os
+
 
 class WormGame(GameMaster):
-    players: list[PlayerObject] = []
     currentPlayerIndex = 0
+    players: list[PlayerObject] = []
+    playerTimeLimit = 10
+    turn = 0
     waitTime = 0
     waitTimeLimit = 2
-    wormList : list[Worm] = []
-    turn = 0
     waterHeight = 100
+    waterRisingTurn = 2
     waterY = 0
+    wormList: list[Worm] = []
+    wormColors = ["#222288", "#882222"]
+    wormPerPlayer = 2
 
     def onCreate(self):
-        self.worker.show_over = self.show_over;
+        self.worker.show_over = self.show_over
+
+    def readConfig(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(script_dir, "..", "config.txt")
+        with open(config_path, "r") as config:
+            for line in config:
+                lineData = line.rstrip().split("=")
+                if len(lineData) > 1:
+                    if lineData[0] == 'PLAYER_COLORS':
+                        self.wormColors = lineData[1].split(",")
+
+                    if lineData[0] == 'WORMS_PER_PLAYER':
+                        self.wormPerPlayer = int(lineData[1])
+
+                    if lineData[0] == 'PLAYER_TIME_LIMIT':
+                        self.playerTimeLimit = int(lineData[1])
+
+                    if lineData[0] == 'WAIT_TIME_LIMIT':
+                        self.waitTimeLimit = int(lineData[1])
+
+                    if lineData[0] == 'WATER_HEIGHT_START':
+                        self.waterHeight = int(lineData[1])
+
+                    if lineData[0] == 'WATER_RISING_TURN':
+                        self.waterRisingTurn = int(lineData[1])
 
     def start(self):
         Field(self.worker).collider.move_to((0,0))
@@ -25,14 +56,16 @@ class WormGame(GameMaster):
         # hole = CircleBox(100,100,75)
         # self.worker.set_hole(hole)
 
-        for i in ("#222288", "#882222"):
-            test = PlayerObject(self.worker)
-            test.color = i
-            self.wormList.append(test.addWorm().init(self.wormList))
-            self.wormList.append(test.addWorm().init(self.wormList))
-            self.wormList.append(test.addWorm().init(self.wormList))
-            self.wormList.append(test.addWorm().init(self.wormList))
-            self.players.append(test)
+        self.readConfig()
+
+        for i in self.wormColors:
+            player = PlayerObject(self.worker)
+            player.color = i
+            player.playTimeLimit = self.playerTimeLimit
+            for j in range(self.wormPerPlayer):
+                self.wormList.append(player.addWorm().init(self.wormList))
+                self.wormList.append(player.addWorm().init(self.wormList))
+            self.players.append(player)
 
     def update(self):
         pass
@@ -85,5 +118,5 @@ class WormGame(GameMaster):
             self.turn += 1
             self.currentPlayerIndex = 0
 
-            if self.turn > 2:
+            if self.turn > self.waterRisingTurn:
                 self.waterHeight += 5
